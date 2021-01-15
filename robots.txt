@@ -1,2 +1,2 @@
 User-Agent: *
-Sitemap: https://jegornagel.github.io/sitemap.xml
+Sitemap: https://q.jegornagel.com/sitemap.xml

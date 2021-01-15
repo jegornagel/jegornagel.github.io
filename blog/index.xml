@@ -2,10 +2,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Блог on Заметки Егора Нагель</title>
-    <link>https://jegornagel.github.io/blog/</link>
+    <link>https://q.jegornagel.com/blog/</link>
     <description>Recent content in Блог on Заметки Егора Нагель</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ru-RU</language>
-    <copyright>Без копирайта.</copyright><atom:link href="https://jegornagel.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>Без копирайта.</copyright><atom:link href="https://q.jegornagel.com/blog/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
