@@ -3,12 +3,12 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://q.jegornagel.com/</loc>
+    <loc>q.jegornagel.com/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://q.jegornagel.com/blog/</loc>
+    <loc>q.jegornagel.com/blog/</loc>
   </url>
   
 </urlset>
