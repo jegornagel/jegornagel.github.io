@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Birthday Note</title>
+  <meta name="description" content="A birthday note." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #F8F3EA;
+      --paper: rgba(255,255,255,0.58);
+      --text: #171717;
+      --muted: #5f5a54;
+      --line: rgba(23,23,23,0.12);
+      --red: #E95B43;
+      --blue: #2F5BFF;
+      --yellow: #F4D21F;
+      --green: #91B87C;
+      --shadow: 0 20px 60px rgba(0,0,0,0.08);
+      --radius: 24px;
+      --max: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(47,91,255,0.06), transparent 22%),
+        radial-gradient(circle at 82% 14%, rgba(233,91,67,0.06), transparent 20%),
+        radial-gradient(circle at 40% 70%, rgba(244,210,31,0.08), transparent 24%),
+        var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .wrap {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .frame {
+      position: fixed;
+      inset: 14px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    .nav-note,
+    .nav-pill {
+      position: fixed;
+      top: 24px;
+      z-index: 60;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(248,243,234,0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+
+    .nav-note { left: 28px; }
+
+    .nav-pill {
+      right: 28px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      letter-spacing: 0.08em;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 999px;
+      box-shadow: 0 0 0 6px rgba(145,184,124,0.15);
+      flex: 0 0 auto;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding: 96px 0;
+    }
+
+    .hero {
+      min-height: 100svh;
+      padding-top: 120px;
+    }
+
+    .hero-grid,
+    .two-col,
+    .gift-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.42);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      font-size: clamp(52px, 9vw, 132px);
+      line-height: .94;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+      margin-top: 20px;
+      max-width: 8ch;
+      text-wrap: balance;
+    }
+
+    .subhero {
+      margin-top: 18px;
+      font-size: clamp(18px, 2vw, 26px);
+      color: var(--muted);
+      max-width: 28ch;
+      line-height: 1.25;
+      text-wrap: balance;
+    }
+
+    .hero-card,
+    .panel {
+      background: var(--paper);
+      border: 1px solid rgba(255,255,255,0.72);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .hero-card {
+      position: relative;
+      padding: 28px;
+      min-height: 380px;
+      overflow: hidden;
+    }
+
+    .panel {
+      width: 100%;
+      padding: clamp(24px, 4vw, 48px);
+    }
+
+    .sticker {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      box-shadow: var(--shadow);
+      transform: rotate(-8deg);
+      background: var(--red);
+      color: white;
+      font-size: 28px;
+    }
+
+    .post-lines {
+      display: grid;
+      gap: 14px;
+      margin-top: 72px;
+    }
+
+    .line-chip {
+      display: inline-block;
+      width: fit-content;
+      max-width: 100%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.66);
+      font-size: clamp(16px, 2vw, 22px);
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .line-chip.blue { background: rgba(47,91,255,0.1); }
+    .line-chip.red { background: rgba(233,91,67,0.1); }
+    .line-chip.green { background: rgba(145,184,124,0.16); }
+
+    .micro {
+      margin-top: 20px;
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .big {
+      font-size: clamp(38px, 7vw, 92px);
+      line-height: .96;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+      max-width: 11ch;
+      text-wrap: balance;
+    }
+
+    .small-note {
+      font-size: clamp(16px, 2vw, 22px);
+      line-height: 1.35;
+      color: var(--muted);
+      max-width: 30ch;
+      text-wrap: balance;
+    }
+
+    .quote-screen,
+    .banana-screen,
+    .footer-note {
+      text-align: center;
+    }
+
+    .quote {
+      font-size: clamp(34px, 7vw, 92px);
+      line-height: .98;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+      max-width: 12ch;
+      margin: 0 auto;
+      text-wrap: balance;
+    }
+
+    .quote-tag {
+      margin-top: 18px;
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      padding: 16px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      box-shadow: var(--shadow);
+      transition: transform .25s ease;
+      line-height: 1.1;
+    }
+
+    .tag:hover {
+      transform: translateY(-4px) rotate(-1.5deg);
+    }
+
+    .tag.red { background: rgba(233,91,67,0.12); }
+    .tag.blue { background: rgba(47,91,255,0.10); }
+    .tag.yellow { background: rgba(244,210,31,0.18); }
+    .tag.green { background: rgba(145,184,124,0.16); }
+
+    .map-box {
+      position: relative;
+      overflow: hidden;
+      min-height: 360px;
+    }
+
+    .map-copy {
+      position: relative;
+      z-index: 2;
+      margin-top: 132px;
+      max-width: 26ch;
+    }
+
+    .map-note {
+      margin-top: 18px;
+      font-size: clamp(18px, 2vw, 24px);
+      color: var(--muted);
+      text-wrap: balance;
+    }
+
+    .map-label {
+      position: absolute;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 10px;
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    .de {
+      top: 116px;
+      left: 15%;
+    }
+
+    .mx {
+      top: 228px;
+      right: 8%;
+    }
+
+    .route {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      z-index: 1;
+    }
+
+    .banana-big {
+      font-size: clamp(74px, 12vw, 180px);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .banana-title {
+      font-size: clamp(34px, 6vw, 82px);
+      line-height: .98;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+      max-width: 10ch;
+      margin: 0 auto;
+      text-wrap: balance;
+    }
+
+    .gift-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gift-card::after {
+      content:"";
+      position: absolute;
+      inset: auto -80px -80px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(47,91,255,0.18), transparent 65%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .gift-title {
+      font-size: clamp(42px, 6vw, 84px);
+      line-height: .95;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+      max-width: 8ch;
+      text-wrap: balance;
+    }
+
+    .gift-text {
+      font-size: clamp(16px, 2vw, 22px);
+      color: var(--muted);
+      max-width: 28ch;
+      line-height: 1.35;
+      margin-top: 16px;
+      text-wrap: balance;
+    }
+
+    .gift-box {
+      border: 1px dashed rgba(23,23,23,0.18);
+      border-radius: 22px;
+      padding: 22px;
+      background: rgba(255,255,255,0.6);
+    }
+
+    .gift-meta {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .gift-service {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(47,91,255,0.08);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .reveal-btn {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+      background: var(--text);
+      color: #fff;
+      box-shadow: var(--shadow);
+      max-width: 100%;
+    }
+
+    .reveal-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .code-box {
+      margin-top: 14px;
+      display: none;
+      gap: 10px;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .code-box.show { display: flex; }
+
+    .code-label {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .code {
+      width: 100%;
+      max-width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--line);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14px;
+      letter-spacing: .08em;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .footer-title {
+      font-size: clamp(36px, 6.2vw, 80px);
+      line-height: .98;
+      letter-spacing: -0.05em;
+      font-weight: 800;
+      max-width: 12ch;
+      margin: 0 auto;
+      text-wrap: balance;
+    }
+
+    .footer-sub {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: clamp(16px, 2vw, 22px);
+      text-wrap: balance;
+    }
+
+    .tiny {
+      margin-top: 22px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* tablet */
+    @media (max-width: 900px) {
+      .hero-grid,
+      .two-col,
+      .gift-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      section {
+        min-height: auto;
+        padding: 84px 0;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: 110px;
+      }
+
+      .hero-card {
+        min-height: 280px;
+      }
+
+      .map-copy {
+        margin-top: 170px;
+      }
+
+      .de {
+        top: 118px;
+        left: 8%;
+      }
+
+      .mx {
+        top: 228px;
+        right: 5%;
+      }
+    }
+
+    /* mobile */
+    @media (max-width: 640px) {
+      .wrap {
+        width: min(calc(100% - 20px), var(--max));
+      }
+
+      .frame {
+        inset: 8px;
+        border-radius: 20px;
+      }
+
+      .nav-note,
+      .nav-pill {
+        top: 14px;
+        font-size: 10px;
+        padding: 7px 9px;
+      }
+
+      .nav-note {
+        left: 12px;
+        max-width: calc(100vw - 130px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .nav-pill {
+        right: 12px;
+      }
+
+      section {
+        padding: 64px 0;
+      }
+
+      .hero {
+        padding-top: 84px;
+      }
+
+      h1 {
+        font-size: clamp(42px, 14vw, 72px);
+        line-height: .95;
+        max-width: 7ch;
+      }
+
+      .subhero {
+        margin-top: 14px;
+        font-size: 18px;
+        max-width: 18ch;
+      }
+
+      .micro,
+      .quote-tag,
+      .gift-meta,
+      .tiny,
+      .eyebrow {
+        font-size: 11px;
+      }
+
+      .hero-card,
+      .panel {
+        border-radius: 20px;
+      }
+
+      .hero-card {
+        min-height: auto;
+        padding: 20px;
+      }
+
+      .sticker {
+        top: 14px;
+        right: 14px;
+        padding: 10px 14px;
+        font-size: 22px;
+      }
+
+      .post-lines {
+        margin-top: 56px;
+        gap: 10px;
+      }
+
+      .line-chip {
+        width: 100%;
+        font-size: 15px;
+        padding: 12px 14px;
+      }
+
+      .panel {
+        padding: 20px;
+      }
+
+      .big {
+        font-size: clamp(30px, 11vw, 48px);
+        max-width: 100%;
+      }
+
+      .small-note,
+      .gift-text,
+      .map-note,
+      .footer-sub {
+        font-size: 16px;
+        max-width: 100%;
+      }
+
+      .quote {
+        font-size: clamp(28px, 10vw, 48px);
+        max-width: 100%;
+      }
+
+      .tags {
+        gap: 10px;
+      }
+
+      .tag {
+        padding: 13px 16px;
+        font-size: 14px;
+      }
+
+      .map-box {
+        min-height: 280px;
+        padding-bottom: 20px;
+      }
+
+      .map-copy {
+        margin-top: 156px;
+        max-width: 18ch;
+      }
+
+      .map-label {
+        font-size: 11px;
+        padding: 7px 9px;
+      }
+
+      .de {
+        top: 84px;
+        left: 8%;
+      }
+
+      .mx {
+        top: 136px;
+        right: 4%;
+      }
+
+      .banana-big {
+        font-size: 92px;
+      }
+
+      .banana-title {
+        font-size: clamp(28px, 10vw, 44px);
+        max-width: 100%;
+      }
+
+      .gift-title {
+        font-size: clamp(34px, 11vw, 52px);
+        max-width: 100%;
+      }
+
+      .gift-box {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .gift-service {
+        font-size: 11px;
+      }
+
+      .reveal-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .code {
+        font-size: 13px;
+        padding: 12px;
+      }
+
+      .footer-title {
+        font-size: clamp(30px, 11vw, 48px);
+        max-width: 100%;
+      }
+    }
+
+    /* very small phones */
+    @media (max-width: 390px) {
+      h1 {
+        font-size: clamp(38px, 13vw, 60px);
+      }
+
+      .big,
+      .quote,
+      .banana-title,
+      .footer-title {
+        letter-spacing: -0.04em;
+      }
+
+      .map-box {
+        min-height: 250px;
+      }
+
+      .map-copy {
+        margin-top: 142px;
+      }
+
+      .de {
+        top: 76px;
+      }
+
+      .mx {
+        top: 126px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+      .tag,
+      .reveal-btn {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame"></div>
+
+  <div class="nav-note">A Birthday Note</div>
+  <div class="nav-pill">
+    <span class="dot"></span>
+    <span>delivered</span>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="reveal">
+          <div class="eyebrow">sent through the internet</div>
+          <h1>Happy Birthday,<br>Dude</h1>
+          <p class="subhero">30 looks good on you.</p>
+          <div class="micro">No long speech. Just real friendship.</div>
+        </div>
+
+        <div class="hero-card reveal">
+          <div class="sticker">30</div>
+
+          <div class="post-lines">
+            <span class="line-chip blue">met on a website</span>
+            <span class="line-chip red">stayed friends for many years</span>
+            <span class="line-chip green">some things online turn out to be real</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="panel two-col reveal">
+          <div>
+            <h2 class="big">We met on a website many years ago. Still real.</h2>
+          </div>
+          <div>
+            <p class="small-note">
+              Not everyone gets a friendship like this.
+              Good moments, hard moments, still there.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="panel quote-screen reveal">
+          <h2 class="quote">Real brotherhood.</h2>
+          <div class="quote-tag">the solid kind</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="panel reveal">
+          <div class="eyebrow">friendship archive</div>
+          <div class="tags">
+            <div class="tag red">Funny</div>
+            <div class="tag blue">Smart</div>
+            <div class="tag green">Sincere</div>
+            <div class="tag">Creative</div>
+            <div class="tag yellow">Gamer</div>
+            <div class="tag blue">3D printer wizard</div>
+            <div class="tag red">Good taste in food</div>
+            <div class="tag yellow">Banana-certified 🍌</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="panel map-box reveal">
+          <div class="eyebrow">digital route</div>
+
+          <div class="map-label de">Germany</div>
+          <div class="map-label mx">Mexico</div>
+
+          <svg class="route" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true">
+            <path
+              d="M 180 120 C 360 20, 530 50, 700 180 S 950 290, 1080 240"
+              fill="none"
+              stroke="rgba(23,23,23,0.16)"
+              stroke-width="2"
+              stroke-dasharray="8 10"
+              stroke-linecap="round"/>
+            <circle cx="180" cy="120" r="7" fill="#2F5BFF"/>
+            <circle cx="1080" cy="240" r="7" fill="#E95B43"/>
+            <circle cx="1080" cy="240" r="16" fill="none" stroke="rgba(233,91,67,0.25)" stroke-width="2"/>
+          </svg>
+
+          <div class="map-copy">
+            <p class="map-note">Still haven’t met. Still a real one.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="panel banana-screen reveal">
+          <div class="banana-big">🍌</div>
+          <h2 class="banana-title">Serious friendship. Unserious banana.</h2>
+          <div class="tiny">archive symbol</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="panel gift-card reveal">
+          <div class="gift-grid">
+            <div>
+              <div class="eyebrow">birthday drop</div>
+              <h2 class="gift-title">Birthday gift inside</h2>
+              <p class="gift-text">
+                A little Steam bonus for your next game.
+              </p>
+            </div>
+
+            <div class="gift-box">
+              <div class="gift-meta">gift reveal</div>
+              <div class="gift-service">Steam gift code</div>
+              <p class="small-note" style="margin-bottom: 18px;">
+                A Steam gift code for you.
+              </p>
+
+              <button class="reveal-btn" id="revealBtn">Open gift</button>
+
+              <div class="code-box" id="codeBox">
+                <div class="code-label">Use this code on Steam:</div>
+                <div class="code" id="giftCode">YOUR-STEAM-CODE-HERE</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="footer-note reveal">
+          <h2 class="footer-title">Happy Birthday, my friend. You’re one of the real ones.</h2>
+          <p class="footer-sub">Have a good one.</p>
+          <div class="tiny">sent with friendship, respect, and banana energy</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.14 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    const revealBtn = document.getElementById('revealBtn');
+    const codeBox = document.getElementById('codeBox');
+
+    revealBtn.addEventListener('click', () => {
+      codeBox.classList.add('show');
+      revealBtn.textContent = 'Gift opened';
+      revealBtn.disabled = true;
+      revealBtn.style.opacity = '.72';
+      revealBtn.style.cursor = 'default';
+    });
+  </script>
+</body>
+</html>
