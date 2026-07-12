@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RemNote → PDF с полем для заметок</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root {
+      --content-width: 66%;
+      --notes-width: 34%;
+      --font-size: 14px;
+      --line-height: 1.45;
+      --page-padding: 5mm;
+      --screen-bg: #f5f6f8;
+      --page-bg: #ffffff;
+      --border: #dcdfe4;
+      --text: #1f2328;
+      --muted: #6b7280;
+      --accent: #2f6fed;
+      --divider-color: #bfc7d1;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--screen-bg);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      min-height: 100vh;
+    }
+
+    .panel {
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .panel h1 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    .panel p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .controls {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .control {
+      display: grid;
+      gap: 6px;
+    }
+
+    .control label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .control input[type="range"] {
+      width: 100%;
+    }
+
+    .control .value {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .filebox {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fafbfc;
+      margin-bottom: 14px;
+    }
+
+    .filebox input[type="file"] {
+      width: 100%;
+      font-size: 13px;
+    }
+
+    .filehint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 320px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 13px;
+      line-height: 1.4;
+      background: #fcfcfd;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0 16px;
+    }
+
+    button {
+      border: 0;
+      background: var(--accent);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #e9edf5;
+      color: #1f2937;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .preview-wrap {
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: var(--page-bg);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      display: grid;
+      grid-template-columns: var(--content-width) var(--notes-width);
+      position: relative;
+    }
+
+    .content {
+      padding: var(--page-padding);
+      padding-right: 4mm;
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+      overflow-wrap: anywhere;
+    }
+
+    .notes {
+      position: relative;
+      padding: var(--page-padding);
+      padding-left: 4mm;
+      border-left: 1.5px solid var(--divider-color);
+      min-height: 297mm;
+    }
+
+    .content h1,
+    .content h2,
+    .content h3,
+    .content h4,
+    .content h5,
+    .content h6 {
+      margin-top: 0.9em;
+      margin-bottom: 0.35em;
+      line-height: 1.18;
+      font-weight: 700;
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    .content h1 { font-size: 1.45em; }
+    .content h2 { font-size: 1.28em; }
+    .content h3 { font-size: 1.15em; }
+    .content h4 { font-size: 1.06em; }
+    .content h5 { font-size: 1em; }
+    .content h6 { font-size: 0.95em; }
+
+    .content p,
+    .content ul,
+    .content ol,
+    .content blockquote,
+    .content pre,
+    .content table {
+      margin-top: 0.35em;
+      margin-bottom: 0.6em;
+    }
+
+    .content ul,
+    .content ol {
+      padding-left: 1.2em;
+    }
+
+    .content li {
+      margin: 0.15em 0;
+    }
+
+    .content pre {
+      white-space: pre-wrap;
+      background: #f6f8fa;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.93em;
+    }
+
+    .content code {
+      background: #f1f3f5;
+      padding: 0.08em 0.28em;
+      border-radius: 4px;
+    }
+
+    .content table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.93em;
+    }
+
+    .content th,
+    .content td {
+      border: 1px solid #d7dce2;
+      padding: 5px 6px;
+      vertical-align: top;
+    }
+
+    .content img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .content hr {
+      border: none;
+      border-top: 1px solid #d7dce2;
+      margin: 0.8em 0;
+    }
+
+    .page-title {
+      position: absolute;
+      top: 2mm;
+      left: 5mm;
+      font-size: 9px;
+      color: #6b7280;
+      display: none;
+    }
+
+    .show-title .page-title {
+      display: block;
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      body {
+        background: white;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .panel {
+        display: none !important;
+      }
+
+      .preview-wrap {
+        padding: 0;
+      }
+
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0;
+        box-shadow: none;
+        break-after: page;
+        page-break-after: always;
+      }
+
+      .content,
+      .notes {
+        min-height: 297mm;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel">
+      <h1>Конвертор в PDF с полем для заметок</h1>
+      <p>
+        Вставь HTML из RemNote или загрузи .html / .zip. Слева будет текст, справа пустое поле для заметок.
+      </p>
+
+      <div class="controls">
+        <div class="control">
+          <label for="contentWidth">Ширина текста слева</label>
+          <input id="contentWidth" type="range" min="50" max="80" value="66" />
+          <div class="value"><span id="contentWidthValue">66</span>% текста / <span id="notesWidthValue">34</span>% заметки</div>
+        </div>
+
+        <div class="control">
+          <label for="fontSize">Размер основного шрифта</label>
+          <input id="fontSize" type="range" min="11" max="18" value="14" />
+          <div class="value"><span id="fontSizeValue">14</span> px</div>
+        </div>
+
+        <div class="control">
+          <label for="lineHeight">Межстрочный интервал</label>
+          <input id="lineHeight" type="range" min="1.2" max="1.9" step="0.05" value="1.45" />
+          <div class="value"><span id="lineHeightValue">1.45</span></div>
+        </div>
+
+        <div class="control">
+          <label>
+            <input id="showTitle" type="checkbox" />
+            Показать маленький заголовок страницы
+          </label>
+        </div>
+
+        <div class="control">
+          <label for="titleInput">Заголовок</label>
+          <input id="titleInput" type="text" placeholder="Например: История — конспект 1" style="padding:10px;border:1px solid #dcdfe4;border-radius:8px;font-size:14px;" />
+        </div>
+      </div>
+
+      <div class="filebox">
+        <label for="fileInput" style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;">
+          Загрузить файл
+        </label>
+        <input id="fileInput" type="file" accept=".html,.htm,.zip,text/html,application/zip" />
+        <div class="filehint">
+          Поддерживаются: <b>.html</b>, <b>.htm</b>, <b>.zip</b>.<br>
+          Если это zip, страница попробует найти внутри первый HTML-файл.
+        </div>
+        <div class="status" id="fileStatus"></div>
+      </div>
+
+      <label for="htmlInput" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">
+        Или вставь HTML вручную
+      </label>
+      <textarea id="htmlInput" placeholder="<h1>Тема</h1><p>Текст...</p>"></textarea>
+
+      <div class="buttons">
+        <button id="renderBtn">Обновить предпросмотр</button>
+        <button id="printBtn">Печать / PDF</button>
+        <button id="sampleBtn" class="secondary">Вставить пример</button>
+        <button id="clearBtn" class="secondary">Очистить</button>
+      </div>
+
+      <div class="hint">
+        Если в экспорте есть полный HTML-документ с &lt;body&gt;, страница возьмёт содержимое из него автоматически.
+      </div>
+    </aside>
+
+    <main class="preview-wrap">
+      <section class="page" id="page">
+        <div class="page-title" id="pageTitle"></div>
+        <article class="content" id="content"></article>
+        <aside class="notes" id="notes"></aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const htmlInput = document.getElementById('htmlInput');
+    const content = document.getElementById('content');
+    const page = document.getElementById('page');
+
+    const contentWidth = document.getElementById('contentWidth');
+    const contentWidthValue = document.getElementById('contentWidthValue');
+    const notesWidthValue = document.getElementById('notesWidthValue');
+
+    const fontSize = document.getElementById('fontSize');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+
+    const lineHeight = document.getElementById('lineHeight');
+    const lineHeightValue = document.getElementById('lineHeightValue');
+
+    const showTitle = document.getElementById('showTitle');
+    const titleInput = document.getElementById('titleInput');
+    const pageTitle = document.getElementById('pageTitle');
+
+    const renderBtn = document.getElementById('renderBtn');
+    const printBtn = document.getElementById('printBtn');
+    const sampleBtn = document.getElementById('sampleBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    const fileInput = document.getElementById('fileInput');
+    const fileStatus = document.getElementById('fileStatus');
+
+    function setStatus(text, isError = false) {
+      fileStatus.textContent = text;
+      fileStatus.style.color = isError ? '#b42318' : '#6b7280';
+    }
+
+    function extractBodyIfNeeded(input) {
+      const trimmed = input.trim();
+      if (!trimmed) return '';
+
+      if (/<body[\s>]/i.test(trimmed)) {
+        const doc = new DOMParser().parseFromString(trimmed, 'text/html');
+        return doc.body.innerHTML;
+      }
+      return trimmed;
+    }
+
+    function render() {
+      const raw = htmlInput.value;
+      const prepared = extractBodyIfNeeded(raw);
+      content.innerHTML = prepared;
+
+      const cw = Number(contentWidth.value);
+      const nw = 100 - cw;
+      document.documentElement.style.setProperty('--content-width', cw + '%');
+      document.documentElement.style.setProperty('--notes-width', nw + '%');
+      contentWidthValue.textContent = cw;
+      notesWidthValue.textContent = nw;
+
+      const fs = Number(fontSize.value);
+      document.documentElement.style.setProperty('--font-size', fs + 'px');
+      fontSizeValue.textContent = fs;
+
+      const lh = lineHeight.value;
+      document.documentElement.style.setProperty('--line-height', lh);
+      lineHeightValue.textContent = lh;
+
+      page.classList.toggle('show-title', showTitle.checked);
+      pageTitle.textContent = titleInput.value.trim();
+    }
+
+    async function loadHtmlFile(file) {
+      const text = await file.text();
+      htmlInput.value = text;
+      render();
+      setStatus(`Загружен HTML: ${file.name}`);
+    }
+
+    async function loadZipFile(file) {
+      if (typeof JSZip === 'undefined') {
+        setStatus('Не удалось загрузить библиотеку JSZip.', true);
+        return;
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const zip = await JSZip.loadAsync(arrayBuffer);
+
+      const entries = Object.values(zip.files)
+        .filter(entry => !entry.dir);
+
+      const htmlEntry = entries.find(entry =>
+        /\.html?$/i.test(entry.name)
+      );
+
+      if (!htmlEntry) {
+        setStatus('В zip не найден .html или .htm файл.', true);
+        return;
+      }
+
+      const text = await htmlEntry.async('string');
+      htmlInput.value = text;
+      render();
+      setStatus(`Из zip загружен HTML: ${htmlEntry.name}`);
+    }
+
+    async function handleFileSelect(file) {
+      if (!file) return;
+
+      setStatus(`Загрузка: ${file.name}...`);
+
+      try {
+        if (/\.html?$/i.test(file.name)) {
+          await loadHtmlFile(file);
+          return;
+        }
+
+        if (/\.zip$/i.test(file.name)) {
+          await loadZipFile(file);
+          return;
+        }
+
+        setStatus('Неподдерживаемый формат файла.', true);
+      } catch (err) {
+        console.error(err);
+        setStatus('Ошибка при чтении файла.', true);
+      }
+    }
+
+    renderBtn.addEventListener('click', render);
+
+    printBtn.addEventListener('click', () => {
+      render();
+      window.print();
+    });
+
+    sampleBtn.addEventListener('click', () => {
+      htmlInput.value = `
+        <h1>Причины Французской революции</h1>
+        <p>Французская революция началась в 1789 году и была вызвана сочетанием социальных, экономических и политических факторов.</p>
+
+        <h2>1. Социальное неравенство</h2>
+        <ul>
+          <li>Общество делилось на три сословия.</li>
+          <li>Первые два сословия имели привилегии.</li>
+          <li>Третье сословие несло основную налоговую нагрузку.</li>
+        </ul>
+
+        <h2>2. Финансовый кризис</h2>
+        <p>Государство имело большие долги из-за войн и неэффективной налоговой системы.</p>
+
+        <h3>Дополнение</h3>
+        <p>Особую роль сыграл также кризис доверия к монархии.</p>
+
+        <h2>3. Идеи Просвещения</h2>
+        <p>Мысли о свободе, равенстве и народном суверенитете подрывали авторитет абсолютной монархии.</p>
+
+        <blockquote>
+          Народ начал воспринимать политическую систему как несправедливую и устаревшую.
+        </blockquote>
+
+        <h2>Вывод</h2>
+        <p>Революция стала результатом накопленного кризиса старого порядка.</p>
+      `;
+      titleInput.value = 'Пример конспекта';
+      showTitle.checked = true;
+      render();
+      setStatus('Вставлен демонстрационный пример.');
+    });
+
+    clearBtn.addEventListener('click', () => {
+      htmlInput.value = '';
+      titleInput.value = '';
+      showTitle.checked = false;
+      fileInput.value = '';
+      setStatus('');
+      render();
+    });
+
+    contentWidth.addEventListener('input', render);
+    fontSize.addEventListener('input', render);
+    lineHeight.addEventListener('input', render);
+    showTitle.addEventListener('change', render);
+    titleInput.addEventListener('input', render);
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      await handleFileSelect(file);
+    });
+
+    render();
+  </script>
+</body>
+</html>
