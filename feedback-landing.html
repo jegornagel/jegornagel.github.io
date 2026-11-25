@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pflegeforschung – Befragung zum Feedback in der Praxis</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-hover: #115e59;
+      --primary-light: #f0fdfa;
+      --primary-border: #99f6e4;
+      --accent-bg: #fffbeb;
+      --accent-border: #fde68a;
+      --accent-text: #92400e;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 740px;
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 4px 10px -6px rgba(15, 23, 42, 0.04);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .top-bar {
+      background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+      color: #ffffff;
+      padding: 24px 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 10px;
+    }
+
+    .top-bar h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .content {
+      padding: 32px;
+    }
+
+    .greeting {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    p {
+      margin-bottom: 16px;
+      font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    .research-question {
+      background-color: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      border-top: 1px solid var(--primary-border);
+      border-right: 1px solid var(--primary-border);
+      border-bottom: 1px solid var(--primary-border);
+      padding: 18px 20px;
+      border-radius: 0 12px 12px 0;
+      margin: 20px 0 24px;
+      font-weight: 600;
+      font-size: 1.03rem;
+      color: #134e4a;
+    }
+
+    .info-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .pill {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .hints-box {
+      background-color: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
+
+    .hints-box h2 {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--accent-text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hints-box ul {
+      padding-left: 20px;
+      color: #78350f;
+    }
+
+    .hints-box li {
+      margin-bottom: 10px;
+    }
+
+    .hints-box li:last-child {
+      margin-bottom: 0;
+    }
+
+    .cta-wrapper {
+      text-align: center;
+      margin: 32px 0 28px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background-color: var(--primary);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 16px 36px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
+      transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    .cta-button:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(15, 118, 110, 0.4);
+    }
+
+    .cta-button:active {
+      transform: translateY(0);
+    }
+
+    .contact-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .contact-footer a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .contact-footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .top-bar {
+        padding: 20px;
+      }
+      .top-bar h1 {
+        font-size: 1.4rem;
+      }
+      .content {
+        padding: 22px 20px;
+      }
+      .cta-button {
+        width: 100%;
+        padding: 15px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="container">
+    <header class="top-bar">
+      <div class="badge">Pflegeschule Carereer • Kurs PFK 24–27 H HAS</div>
+      <h1>Einleitung</h1>
+    </header>
+
+    <section class="content">
+      <p class="greeting">Liebe Mitschülerin, lieber Mitschüler,</p>
+
+      <p>
+        wir sind Auszubildende im 3. Ausbildungsjahr (Kurs PFK 24–27 H HAS) an der Pflegeschule Carereer. In unserem Forschungsprojekt untersuchen wir diese Forschungsfrage:
+      </p>
+
+      <blockquote class="research-question">
+        „Welchen Zusammenhang gibt es zwischen der Art und Häufigkeit von Rückmeldungen (Feedback) durch die Pflegefachkräfte und der Lernmotivation von Auszubildenden zur Pflegefachfrau / zum Pflegefachmann im ersten Ausbildungsdrittel in der Praxis?“
+      </blockquote>
+
+      <div class="info-pills">
+        <span class="pill">⏱️ Dauer: ca. 5 Minuten</span>
+        <span class="pill">🔒 Freiwillig &amp; komplett anonym (DSGVO)</span>
+        <span class="pill">✅ Keine Anmeldung nötig</span>
+      </div>
+
+      <p>
+        <strong>Das Ausfüllen dauert nur ca. 5 Minuten.</strong>
+      </p>
+
+      <div class="hints-box">
+        <h2>⚠️ Wichtige Hinweise zum Ausfüllen:</h2>
+        <ul>
+          <li>
+            Mit <strong>Pflegefachkräften</strong> meinen wir nur die examinierten Pflegefachkräfte auf der Station (nicht die Praxisanleitungen – PA).
+          </li>
+          <li>
+            Bitte denke bei allen Fragen an deinen <strong>letzten Praxiseinsatz</strong> in der Ausbildung.
+          </li>
+          <li>
+            Wenn deine Kolleginnen und Kollegen unterschiedlich reagiert haben, wähle bitte die Antwort, die auf deinen <strong>Gesamteindruck (die meisten Situationen)</strong> zutrifft.
+          </li>
+        </ul>
+      </div>
+
+      <div class="cta-wrapper">
+        <a href="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__iZwG7ZUQjg0SFg5RTk3NDNMN1JNWjZUM0czVDJSSS4u" target="_blank" rel="noopener noreferrer" class="cta-button">
+          Jetzt an der Umfrage teilnehmen →
+        </a>
+      </div>
+
+      <footer class="contact-footer">
+        <p>
+          Bei Fragen erreichst du unsere Gruppe (Alona Nahel, Iegor Nikolaienko, Parwin Erfani, Silvi Kepenerova, Elena Francisca Garcia Lopez) unter:
+          <a href="mailto:pflege-feedback@outlook.com">pflege-feedback@outlook.com</a>
+          (Betreuende Lehrerin: Frau Carolin Pohle).
+        </p>
+      </footer>
+    </section>
+  </main>
+
+</body>
+</html>
